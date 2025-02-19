@@ -1,0 +1,22 @@
+{
+    "name": "team-generator-bot",
+    "version": "1.0.0",
+    "description": "Discord bot that generates random teams based on visitors in discord channel",
+    "main": "index.js",
+    "scripts": {
+      "test": "test"
+    },
+    "keywords": [
+      "discord",
+      "bot"
+    ],
+    "author": "Daniel Mattsson",
+    "license": "ISC",
+    "dependencies": {
+      "discord.js": "^14.18.0"
+    },
+    "devDependencies": {
+      "@eslint/js": "^9.20.0",
+      "eslint": "^9.20.1"
+    }
+  }
