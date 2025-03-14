@@ -4,19 +4,25 @@
     "description": "Discord bot that generates random teams based on visitors in discord channel",
     "main": "index.js",
     "scripts": {
-      "test": "test"
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "build": "tsup src/index.ts --minify",
+        "test": "test"
     },
     "keywords": [
-      "discord",
-      "bot"
+        "discord",
+        "bot"
     ],
     "author": "Daniel Mattsson",
     "license": "ISC",
     "dependencies": {
-      "discord.js": "^14.18.0"
+        "discord.js": "^14.18.0"
     },
     "devDependencies": {
-      "@eslint/js": "^9.20.0",
-      "eslint": "^9.20.1"
+        "@eslint/js": "^9.20.0",
+        "eslint": "^9.20.1",
+        "tsup": "^8.3.6",
+        "tsx": "^4.19.3",
+        "typescript": "^5.7.3"
     }
-  }
+}
