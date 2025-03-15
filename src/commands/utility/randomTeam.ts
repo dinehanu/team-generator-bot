@@ -1,45 +1,41 @@
-import { BaseChannel, bold, CommandInteraction, GuildMember, SlashCommandBuilder, TextChannel, VoiceChannel } from "discord.js";
+import { BaseChannel, bold, Channel, CommandInteraction, GuildMember, SlashCommandBuilder, TextChannel, VoiceChannel } from "discord.js";
 
 export const data = new SlashCommandBuilder()
   .setName("random")
   .setDescription("Creates a random team with online users in channel");
 
 export async function execute(interaction: CommandInteraction) {
+  const member = interaction.member as GuildMember; 
+  if(member) {
+    const voiceChannelId = member.voice.channelId
+    if(voiceChannelId){
+      const voiceChannel = await interaction.client.channels.fetch(voiceChannelId)
+      const members = await getCurrentChannelMembers(voiceChannel)
 
-
-  const member = interaction.member;
-  if(member instanceof GuildMember) {
-    console.log("Member is GuildMember!")
+      if(!members || members.length === 0){
+        return interaction.reply("No one here?");
+      }
+    
+      if(members.length > 8){
+        return interaction.reply("To many players!");
+      }
+    
+      const memberNames = members.map(member => member.displayName)
+    
+      if(memberNames.length <= 4) {
+        return interaction.reply("DreamTeam: " + memberNames.join(", "));
+      }
+    
+      return interaction.reply(getRandomizedTeames(memberNames));
+    }
+    else {
+      return interaction.reply("Join the voicechannel that you want to create a team in");
+    }
   }
-  console.log("User that trigggered the slash command: " + interaction.client.user.displayName)
-
-  console.log("interactionuser: " + interaction.member?.user.username)
-
-  const channel = await interaction?.channel?.fetch()
-  channel?.type
-  const members = await getCurrentChannelMembers(channel)
-
-  if(!members){
-    return interaction.reply("No one here?");
-  }
-
-  if(members.length > 8){
-    return interaction.reply("To many players!");
-  }
-
-  const memberNames = members.map(member => member.displayName)
-
-  if(memberNames.length <= 4) {
-    return interaction.reply(memberNames.join(", "));
-  }
-
-  return interaction.reply(getRandomizedTeames(memberNames));
 }
 
-async function getCurrentChannelMembers (channel?: any) {
-
-  console.log("Kanalen är av typ: " + channel?.type)
-  if(channel instanceof TextChannel) {
+async function getCurrentChannelMembers (channel: Channel | null) {
+  if(channel && channel.type === 2 && channel.members) {
     const members = Array.from(channel.members.values())
     return members
   }
