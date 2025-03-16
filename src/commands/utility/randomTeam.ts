@@ -70,7 +70,7 @@ const getRandomizedTeames = (memberNames: string[]) => {
   const response = 
       bold("Team 1") + "\n" + firstHalf.join("\n") 
       + "\n\n" 
-      + bold("Team 1") + "\n" + secondHalf.join("\n") 
+      + bold("Team 2") + "\n" + secondHalf.join("\n") 
 
   return response
 }

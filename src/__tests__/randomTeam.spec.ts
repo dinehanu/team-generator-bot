@@ -12,7 +12,7 @@ describe("GuildMemberAdd Handler", () => {
   });
 
   it.each([undefined, null, new Collection<string, GuildMember>()])
-  ("should return empty channel message if there are no users in the voice channel that discord says the user is connected to", async (input) => {
+  ("should return empty channel message if the users voice channel is %s", (input) => {
   const interactionMock = getCommandInteractionMock();
   interactionMock.client.channels.fetch = jest.fn().mockImplementation(() => Promise.resolve({
     type: 2,
@@ -25,7 +25,7 @@ describe("GuildMemberAdd Handler", () => {
     )
   });
 
-  it("should members in a comma separated string if there are less than 5 members ", async () => {
+  it("should print members in a comma separated string if there are less than 5 members ", () => {
   const interactionMock = getCommandInteractionMock();
     commands.random.execute(interactionMock).then(() =>
       expect(interactionMock.reply).toHaveBeenCalledWith(
@@ -35,19 +35,10 @@ describe("GuildMemberAdd Handler", () => {
   });
 
 
-  it.each([undefined, null, new Collection<string, GuildMember>()])
-  ("should return too many members message if there are more than 8 members in voice channel", async (input) => {
+  it("should return too many members message if there are more than 8 members in voice channel", () => {
 
-    const memberColl = new Collection<string, GuildMember>();
-    memberColl.set("JannesId", {displayName: "Janne"} as GuildMember)
-    memberColl.set("ArnesId", {displayName: "Arne"} as GuildMember)
-    memberColl.set("CillasId", {displayName: "Cilla"} as GuildMember)
-    memberColl.set("MackansId", {displayName: "Mackan"} as GuildMember)
-    memberColl.set("JennysId", {displayName: "Jenny"} as GuildMember)
-    memberColl.set("SttoffesId", {displayName: "Stoffe"} as GuildMember)
-    memberColl.set("RickesId", {displayName: "Ricke"} as GuildMember)
-    memberColl.set("OllesId", {displayName: "Olle"} as GuildMember)
-    memberColl.set("SmuttesId", {displayName: "Smutte"} as GuildMember)
+    
+    const memberColl = getMockedMembersCollection(9)
 
   const interactionMock = getCommandInteractionMock(memberColl);
     commands.random.execute(interactionMock).then(() =>
@@ -56,5 +47,43 @@ describe("GuildMemberAdd Handler", () => {
       )
     )
   });
+
+  it.each([5,6,7,8])("should return two teams if there are %d members in channel", (numberOfMembers: any) => {
+
+    const memberColl = getMockedMembersCollection(numberOfMembers)
+
+  const interactionMock = getCommandInteractionMock(memberColl);
+    commands.random.execute(interactionMock).then(() =>{
+      expect(interactionMock.reply).toHaveBeenCalledWith(expect.stringContaining("**Team 1**"));
+      expect(interactionMock.reply).toHaveBeenCalledWith(expect.stringContaining("**Team 2**"));
+      expect(interactionMock.reply).toHaveBeenCalledWith(expect.stringContaining("Janne"));
+      expect(interactionMock.reply).toHaveBeenCalledWith(expect.stringContaining("Arne"));
+      expect(interactionMock.reply).toHaveBeenCalledWith(expect.stringContaining("Cilla"));
+      expect(interactionMock.reply).toHaveBeenCalledWith(expect.stringContaining("Mackan"));
+      expect(interactionMock.reply).toHaveBeenCalledWith(expect.stringContaining("Jenny"));
+
+      if(numberOfMembers > 5){
+        expect(interactionMock.reply).toHaveBeenCalledWith(expect.stringContaining("Stoffe"));
+      } else if (numberOfMembers > 6) {
+        expect(interactionMock.reply).toHaveBeenCalledWith(expect.stringContaining("Ricke"));
+      } else if (numberOfMembers > 7) {
+        expect(interactionMock.reply).toHaveBeenCalledWith(expect.stringContaining("Olle"));
+      }
+    }
+    )
+  });
+
+  //Expects at most 8 members to be generated out of lazziness
+  const getMockedMembersCollection = (collectionSize: 1|2|3|4|5|6|7|8|9) => {
+    const names = ["Janne","Arne","Cilla","Mackan","Jenny","Stoffe",
+                  "Ricke","Olle","Smutte"]
+    const memberColl = new Collection<string, GuildMember>();
+    for (let index = 0; index < collectionSize; index++) {
+      memberColl.set(names[index]+"Id", {displayName: names[index]} as GuildMember)
+    }
+    return memberColl;
+  }
+  
+
 
 });
